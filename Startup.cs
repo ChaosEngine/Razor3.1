@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,22 @@ namespace Razor3_1
 {
 	public class Startup
 	{
+		#region Main
+
+		public static void Main(string[] args)
+		{
+			CreateHostBuilder(args).Build().Run();
+		}
+
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
+				.ConfigureWebHostDefaults(webBuilder =>
+				{
+					webBuilder.UseStartup<Startup>();
+				});
+
+		#endregion Main
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -33,17 +50,27 @@ namespace Razor3_1
 				options.UseMySql(conn_str, MySqlServerVersion.LatestSupportedServerVersion);
 			});
 
-			//services.AddDistributedMySqlCache(opts =>
-			//{
-			//	opts.ConnectionString = conn_str;
+			services.AddDistributedMySqlCache(options =>
+			{
+				options.ConnectionString = conn_str;
 
-			//	var builder = new DbConnectionStringBuilder();
-			//	builder.ConnectionString = conn_str;
-			//	opts.SchemaName = builder["database"] as string;
+				var builder = new DbConnectionStringBuilder();
+				builder.ConnectionString = conn_str;
+				options.SchemaName = builder["database"] as string;
 
-			//	opts.TableName = nameof(SessionCache);
-			//	opts.ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(30);
-			//});
+				options.TableName = nameof(SessionCache);
+				options.ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(30);
+			});
+
+			services.AddSession(options =>
+			{
+				// Set a short timeout for easy testing.
+				options.IdleTimeout = TimeSpan.FromMinutes(60);
+				options.Cookie.Path = "/";
+				options.Cookie.HttpOnly = true;
+				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+				options.Cookie.SameSite = SameSiteMode.Strict;
+			});
 
 			services.AddRazorPages()
 				.AddSessionStateTempDataProvider();
@@ -72,8 +99,9 @@ namespace Razor3_1
 			app.UseStaticFiles();
 
 			app.UseRouting();
-
+			app.UseSession();
 			app.UseAuthorization();
+			app.UseSession();
 
 			app.UseEndpoints(endpoints =>
 			{
