@@ -50,6 +50,9 @@ namespace Razor3_1
 				options.UseMySql(conn_str, MySqlServerVersion.LatestSupportedServerVersion);
 			});
 
+			///
+			/// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-6.0#session-state
+			///
 			services.AddDistributedMySqlCache(options =>
 			{
 				options.ConnectionString = conn_str;
@@ -62,6 +65,9 @@ namespace Razor3_1
 				options.ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(30);
 			});
 
+			///
+			/// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-6.0#configure-session-state
+			/// 
 			services.AddSession(options =>
 			{
 				// Set a short timeout for easy testing.
@@ -70,6 +76,7 @@ namespace Razor3_1
 				options.Cookie.HttpOnly = true;
 				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 				options.Cookie.SameSite = SameSiteMode.Strict;
+				options.Cookie.IsEssential = true;
 			});
 
 			services.AddRazorPages()
@@ -79,9 +86,13 @@ namespace Razor3_1
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			#region Ensure DB is created
+
 			using (var scope = app.ApplicationServices.CreateScope())
 			using (var db_ctx = scope.ServiceProvider.GetService<BloggingContext>())
 				db_ctx.Database.EnsureCreated();
+
+			#endregion Ensure DB is created
 
 
 			if (env.IsDevelopment())
