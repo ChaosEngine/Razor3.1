@@ -7,13 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Caching-MySQL\**" />
+    <Content Remove="Caching-MySQL\**" />
+    <EmbeddedResource Remove="Caching-MySQL\**" />
+    <None Remove="Caching-MySQL\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--needed EF core and pomelo stuff-->
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.13" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.3" />
-		<PackageReference Include="Pomelo.Extensions.Caching.MySql" Version="2.1.2" />
 		
 		<!--all the razors-->
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />
@@ -23,6 +29,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Razor" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Caching-MySQL\src\Pomelo.Extensions.Caching.MySql\Pomelo.Extensions.Caching.MySql.csproj" />
   </ItemGroup>
 
 </Project>
