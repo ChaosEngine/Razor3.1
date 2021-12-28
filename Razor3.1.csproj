@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Caching-MySQL\**" />
+    <Content Remove="Caching-MySQL\**" />
+    <EmbeddedResource Remove="Caching-MySQL\**" />
+    <None Remove="Caching-MySQL\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--needed EF core and pomelo stuff-->
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.13" />
